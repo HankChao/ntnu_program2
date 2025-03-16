@@ -24,7 +24,8 @@ static bool is_in_black_palace(int x, int y) {
 // 判斷是否同一方棋子
 static bool is_same_side(uint8_t piece1, uint8_t piece2) {
     if (piece1 == EMPTY || piece2 == EMPTY) return false;
-    return (piece1 >= RED_CHARIOT) == (piece2 >= RED_CHARIOT);
+    return (piece1 >= RED_GENERAL && piece1 <= RED_SOLDIER) == 
+           (piece2 >= RED_GENERAL && piece2 <= RED_SOLDIER);
 }
 
 //=== 棋子移動規則驗證 ========================================
@@ -34,11 +35,9 @@ static bool validate_general(sXiangqiRecord* record, int x, int y, int new_x, in
     uint8_t piece = record->board[x][y];
     bool is_red = (piece == RED_GENERAL);
 
-    // 目標是否在九宮格內
     if (is_red && !is_in_red_palace(new_x, new_y)) return false;
     if (!is_red && !is_in_black_palace(new_x, new_y)) return false;
 
-    // 移動一步 (橫或豎)
     int dx = abs(new_x - x), dy = abs(new_y - y);
     return (dx == 1 && dy == 0) || (dx == 0 && dy == 1);
 }
@@ -48,11 +47,9 @@ static bool validate_advisor(sXiangqiRecord* record, int x, int y, int new_x, in
     uint8_t piece = record->board[x][y];
     bool is_red = (piece == RED_ADVISOR);
 
-    // 目標是否在九宮格內
     if (is_red && !is_in_red_palace(new_x, new_y)) return false;
     if (!is_red && !is_in_black_palace(new_x, new_y)) return false;
 
-    // 斜線移動一步
     int dx = abs(new_x - x), dy = abs(new_y - y);
     return (dx == 1 && dy == 1);
 }
@@ -62,15 +59,12 @@ static bool validate_elephant(sXiangqiRecord* record, int x, int y, int new_x, i
     uint8_t piece = record->board[x][y];
     bool is_red = (piece == RED_ELEPHANT);
 
-    // 不能過河
     if (is_red && new_x < 5) return false;
     if (!is_red && new_x > 4) return false;
 
-    // 田字移動
     int dx = abs(new_x - x), dy = abs(new_y - y);
     if (dx != 2 || dy != 2) return false;
 
-    // 檢查象眼
     int block_x = (x + new_x) / 2;
     int block_y = (y + new_y) / 2;
     return record->board[block_x][block_y] == EMPTY;
@@ -80,7 +74,6 @@ static bool validate_elephant(sXiangqiRecord* record, int x, int y, int new_x, i
 static bool validate_chariot(sXiangqiRecord* record, int x, int y, int new_x, int new_y) {
     if (x != new_x && y != new_y) return false;
 
-    // 檢查路徑是否被阻擋
     if (x == new_x) {
         int step = (new_y > y) ? 1 : -1;
         for (int j = y + step; j != new_y; j += step) {
@@ -100,7 +93,6 @@ static bool validate_horse(sXiangqiRecord* record, int x, int y, int new_x, int 
     int dx = abs(new_x - x), dy = abs(new_y - y);
     if (!((dx == 2 && dy == 1) || (dx == 1 && dy == 2))) return false;
 
-    // 檢查蹩腳
     int block_x = x + (new_x - x)/2;
     int block_y = y + (new_y - y)/2;
     if (dx == 2) block_y = y;
@@ -108,7 +100,7 @@ static bool validate_horse(sXiangqiRecord* record, int x, int y, int new_x, int 
     return record->board[block_x][block_y] == EMPTY;
 }
 
-// 炮/砲
+// 炮/包
 static bool validate_cannon(sXiangqiRecord* record, int x, int y, int new_x, int new_y) {
     if (x != new_x && y != new_y) return false;
 
@@ -125,7 +117,6 @@ static bool validate_cannon(sXiangqiRecord* record, int x, int y, int new_x, int
         }
     }
 
-    // 吃子需隔一子，移動不隔子
     if (record->board[new_x][new_y] == EMPTY) return (count == 0);
     else return (count == 1);
 }
@@ -137,19 +128,18 @@ static bool validate_soldier(sXiangqiRecord* record, int x, int y, int new_x, in
     int dx = new_x - x;
     int dy = abs(new_y - y);
 
-    // 紅兵：過河前只能向前，過河後可左右
     if (is_red) {
-        if (x >= 5) { // 未過河
-            if (dx != -1 || dy != 0) return false;
-        } else {     // 已過河
-            if (dx != -1 && dx != 0) return false;
-            if (dy > 1) return false;
-        }
-    } else {         // 黑卒
-        if (x <= 4) { // 未過河
+        if (x < 5) { // 未過河
             if (dx != 1 || dy != 0) return false;
         } else {     // 已過河
             if (dx != 1 && dx != 0) return false;
+            if (dy > 1) return false;
+        }
+    } else {
+        if (x > 4) { // 未過河
+            if (dx != -1 || dy != 0) return false;
+        } else {     // 已過河
+            if (dx != -1 && dx != 0) return false;
             if (dy > 1) return false;
         }
     }
@@ -162,43 +152,49 @@ sXiangqiRecord* initXiangqiRecord(void) {
     sXiangqiRecord* record = malloc(sizeof(sXiangqiRecord));
     if (!record) return NULL;
 
-    // 初始化棋盤 (左下角為 (0,0))
     memset(record->board, EMPTY, sizeof(record->board));
 
-    // 紅方布局 (行 0~2)
-    record->board[0][0] = RED_CHARIOT;      // (0,0)
-    record->board[0][8] = RED_CHARIOT;      // (0,8)
-    record->board[0][1] = RED_HORSE;        // (0,1)
-    record->board[0][7] = RED_HORSE;        // (0,7)
-    record->board[0][2] = RED_ELEPHANT;     // (0,2)
-    record->board[0][6] = RED_ELEPHANT;     // (0,6)
-    record->board[0][3] = RED_ADVISOR;      // (0,3)
-    record->board[0][5] = RED_ADVISOR;      // (0,5)
-    record->board[0][4] = RED_GENERAL;      // (0,4)
-    record->board[2][1] = RED_CANNON;       // (2,1)
-    record->board[2][7] = RED_CANNON;       // (2,7)
-    for (int i = 0; i < 5; i++) record->board[3][i*2] = RED_SOLDIER; // (3,0), (3,2), ...
+    // 紅方布局 (行 0~3)
+    record->board[0][0] = RED_CHARIOT;  // 俥 (4)
+    record->board[0][1] = RED_HORSE;    // 傌 (5)
+    record->board[0][2] = RED_ELEPHANT; // 相 (3)
+    record->board[0][3] = RED_ADVISOR;  // 仕 (2)
+    record->board[0][4] = RED_GENERAL;  // 帥 (1)
+    record->board[0][5] = RED_ADVISOR;  // 仕 (2)
+    record->board[0][6] = RED_ELEPHANT; // 相 (3)
+    record->board[0][7] = RED_HORSE;    // 傌 (5)
+    record->board[0][8] = RED_CHARIOT;  // 俥 (4)
+    record->board[2][1] = RED_CANNON;   // 炮 (6)
+    record->board[2][7] = RED_CANNON;   // 炮 (6)
+    record->board[3][0] = RED_SOLDIER;  // 兵 (7)
+    record->board[3][2] = RED_SOLDIER;  // 兵 (7)
+    record->board[3][4] = RED_SOLDIER;  // 兵 (7)
+    record->board[3][6] = RED_SOLDIER;  // 兵 (7)
+    record->board[3][8] = RED_SOLDIER;  // 兵 (7)
 
-    // 黑方布局 (行 7~9)
-    record->board[9][0] = BLACK_CHARIOT;    // (9,0)
-    record->board[9][8] = BLACK_CHARIOT;    // (9,8)
-    record->board[9][1] = BLACK_HORSE;      // (9,1)
-    record->board[9][7] = BLACK_HORSE;      // (9,7)
-    record->board[9][2] = BLACK_ELEPHANT;   // (9,2)
-    record->board[9][6] = BLACK_ELEPHANT;   // (9,6)
-    record->board[9][3] = BLACK_ADVISOR;    // (9,3)
-    record->board[9][5] = BLACK_ADVISOR;    // (9,5)
-    record->board[9][4] = BLACK_GENERAL;    // (9,4)
-    record->board[7][1] = BLACK_CANNON;     // (7,1)
-    record->board[7][7] = BLACK_CANNON;     // (7,7)
-    for (int i = 0; i < 5; i++) record->board[6][i*2] = BLACK_SOLDIER; // (6,0), (6,2), ...
+    // 黑方布局 (行 6~9)
+    record->board[9][0] = BLACK_CHARIOT;  // 車 (11)
+    record->board[9][1] = BLACK_HORSE;    // 馬 (12)
+    record->board[9][2] = BLACK_ELEPHANT; // 象 (10)
+    record->board[9][3] = BLACK_ADVISOR;  // 士 (9)
+    record->board[9][4] = BLACK_GENERAL;  // 將 (8)
+    record->board[9][5] = BLACK_ADVISOR;  // 士 (9)
+    record->board[9][6] = BLACK_ELEPHANT; // 象 (10)
+    record->board[9][7] = BLACK_HORSE;    // 馬 (12)
+    record->board[9][8] = BLACK_CHARIOT;  // 車 (11)
+    record->board[7][1] = BLACK_CANNON;   // 包 (13)
+    record->board[7][7] = BLACK_CANNON;   // 包 (13)
+    record->board[6][0] = BLACK_SOLDIER;  // 卒 (14)
+    record->board[6][2] = BLACK_SOLDIER;  // 卒 (14)
+    record->board[6][4] = BLACK_SOLDIER;  // 卒 (14)
+    record->board[6][6] = BLACK_SOLDIER;  // 卒 (14)
+    record->board[6][8] = BLACK_SOLDIER;  // 卒 (14)
 
-    // 初始化其他字段
     memset(record->red_captured, 0, sizeof(record->red_captured));
     memset(record->black_captured, 0, sizeof(record->black_captured));
     record->move_count = 0;
     record->moves = NULL;
-    record->is_red_turn = true;  // 紅方先手
+    record->is_red_turn = true;
     record->game_over = false;
     return record;
 }
@@ -221,15 +217,12 @@ static bool validate_move(sXiangqiRecord* record, int x, int y, int new_x, int n
     uint8_t piece = record->board[x][y];
     if (piece == EMPTY) return false;
 
-    // 輪次檢查
-    bool is_red = (piece >= RED_CHARIOT);
+    bool is_red = (piece >= RED_GENERAL && piece <= RED_SOLDIER);
     if (is_red != record->is_red_turn) return false;
 
-    // 目標位置檢查
     uint8_t target = record->board[new_x][new_y];
     if (target != EMPTY && is_same_side(piece, target)) return false;
 
-    // 分棋子類型驗證
     switch (piece) {
         case RED_GENERAL:
         case BLACK_GENERAL: return validate_general(record, x, y, new_x, new_y);
@@ -249,22 +242,19 @@ static bool validate_move(sXiangqiRecord* record, int x, int y, int new_x, int n
     }
 }
 
-//=== 核心移動邏輯 =========================================
-
 int32_t moveXiangqiRecord(sXiangqiRecord* record, uint8_t x, uint8_t y, uint8_t new_x, uint8_t new_y) {
     if (!record || !validate_move(record, x, y, new_x, new_y)) return -1;
 
-    // 記錄被吃棋子
     uint8_t target = record->board[new_x][new_y];
     if (target != EMPTY) {
-        if (target >= RED_CHARIOT) { // 紅方被吃
+        if (target >= RED_GENERAL && target <= RED_SOLDIER) {
             for (int i = 0; i < 16; i++) {
                 if (record->red_captured[i] == 0) {
                     record->red_captured[i] = target;
                     break;
                 }
             }
-        } else { // 黑方被吃
+        } else {
             for (int i = 0; i < 16; i++) {
                 if (record->black_captured[i] == 0) {
                     record->black_captured[i] = target;
@@ -274,17 +264,14 @@ int32_t moveXiangqiRecord(sXiangqiRecord* record, uint8_t x, uint8_t y, uint8_t 
         }
     }
 
-    // 更新棋盤
     record->board[new_x][new_y] = record->board[x][y];
     record->board[x][y] = EMPTY;
 
-    // 更新移動記錄
     sMoveRecord* new_moves = realloc(record->moves, (record->move_count + 1) * sizeof(sMoveRecord));
     if (!new_moves) return -1;
     record->moves = new_moves;
     record->moves[record->move_count++] = (sMoveRecord){x, y, new_x, new_y};
 
-    // 切換回合
     record->is_red_turn = !record->is_red_turn;
     return 0;
 }
@@ -294,22 +281,40 @@ int32_t moveXiangqiRecord(sXiangqiRecord* record, uint8_t x, uint8_t y, uint8_t 
 int32_t printXiangqiRecord(sXiangqiRecord* record) {
     if (!record) return -1;
 
-    const char* pieces[] = {"　","車","馬","象","士","將","士","象","馬","車","炮","卒",
-                            "俥","傌","相","仕","帥","仕","相","傌","俥","砲","兵"};
-    
-    // 從下到上列印行 (x: 9~0)
+    const char* pieces[] = {
+        "　", // 0: 空白
+        "帥", // 1: 帥
+        "仕", // 2: 仕
+        "相", // 3: 相
+        "俥", // 4: 俥
+        "傌", // 5: 傌
+        "炮", // 6: 炮
+        "兵", // 7: 兵
+        "將", // 8: 將
+        "士", // 9: 士
+        "象", // 10: 象
+        "車", // 11: 車
+        "馬", // 12: 馬
+        "包", // 13: 包
+        "卒"  // 14: 卒
+    };
+
     printf("\n");
     for (int x = BOARD_ROWS-1; x >= 0; x--) {
-        printf("%2d ", x);  // 行號 (x)
+        printf("%2d ", x);
         for (int y = 0; y < BOARD_COLS; y++) {
             uint8_t p = record->board[x][y];
-            if (p >= RED_CHARIOT) printf("\033[31m%s\033[0m ", pieces[p]);
-            else printf("%s ", pieces[p]);
+            if (p >= RED_GENERAL && p <= RED_SOLDIER) {
+                printf("\033[31m%s\033[0m ", pieces[p]);
+            } else if (p >= BLACK_GENERAL && p <= BLACK_SOLDIER) {
+                printf("%s ", pieces[p]);
+            } else {
+                printf("%s ", pieces[0]);
+            }
         }
         printf("\n");
     }
-    
-    // 列號 (y: 0~8)
+
     printf("   ");
     for (int y = 0; y < BOARD_COLS; y++) printf("%d ", y);
     printf("\n");

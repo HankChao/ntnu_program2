@@ -3,10 +3,10 @@
 #include <locale.h>
 
 int main() {
-    setlocale(LC_ALL, "");
+    setlocale(LC_ALL, ""); // 支持中文字符
     sXiangqiRecord* game = initXiangqiRecord();
     if (!game) {
-        fprintf(stderr, "初始化失败\n");
+        fprintf(stderr, "初始化失敗\n");
         return 1;
     }
 
@@ -14,14 +14,14 @@ int main() {
 
     uint8_t x, y, new_x, new_y;
     while (!game->game_over) {
-        printf("输入移动 (格式: 原x 原y 新x 新y): ");
+        printf("輸入移動 (格式: 原x 原y 新x 新y): ");
         if (scanf("%hhu %hhu %hhu %hhu", &x, &y, &new_x, &new_y) != 4) {
-            fprintf(stderr, "输入格式错误\n");
+            fprintf(stderr, "輸入格式錯誤\n");
             break;
         }
 
         if (moveXiangqiRecord(game, x, y, new_x, new_y) == -1) {
-            fprintf(stderr, "移动无效\n");
+            fprintf(stderr, "移動無效\n");
             continue;
         }
 

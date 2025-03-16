@@ -11,8 +11,20 @@
 // 定義棋子類型
 enum Piece {
     EMPTY = 0,
-    BLACK_CHARIOT, BLACK_HORSE, BLACK_ELEPHANT, BLACK_ADVISOR, BLACK_GENERAL, BLACK_CANNON, BLACK_SOLDIER,
-    RED_CHARIOT, RED_HORSE, RED_ELEPHANT, RED_ADVISOR, RED_GENERAL, RED_CANNON, RED_SOLDIER
+    RED_GENERAL = 1,   // 帥
+    RED_ADVISOR = 2,   // 仕
+    RED_ELEPHANT = 3,  // 相
+    RED_CHARIOT = 4,   // 俥
+    RED_HORSE = 5,     // 傌
+    RED_CANNON = 6,    // 炮
+    RED_SOLDIER = 7,   // 兵
+    BLACK_GENERAL = 8,  // 將
+    BLACK_ADVISOR = 9,  // 士
+    BLACK_ELEPHANT = 10,// 象
+    BLACK_CHARIOT = 11, // 車
+    BLACK_HORSE = 12,   // 馬
+    BLACK_CANNON = 13,  // 包
+    BLACK_SOLDIER = 14  // 卒
 };
 
 // 定義移動記錄結構
