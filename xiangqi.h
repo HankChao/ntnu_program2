@@ -1,38 +1,32 @@
+// xiangqi.h
 #ifndef XIANGQI_H
 #define XIANGQI_H
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-// 定義棋盤大小
 #define BOARD_ROWS 10
 #define BOARD_COLS 9
 
-// 定義棋子類型
-enum Piece {
+typedef enum {
     EMPTY = 0,
-    RED_GENERAL = 1,   // 帥
-    RED_ADVISOR = 2,   // 仕
-    RED_ELEPHANT = 3,  // 相
-    RED_CHARIOT = 4,   // 俥
-    RED_HORSE = 5,     // 傌
-    RED_CANNON = 6,    // 炮
-    RED_SOLDIER = 7,   // 兵
-    BLACK_GENERAL = 8,  // 將
-    BLACK_ADVISOR = 9,  // 士
-    BLACK_ELEPHANT = 10,// 象
-    BLACK_CHARIOT = 11, // 車
-    BLACK_HORSE = 12,   // 馬
-    BLACK_CANNON = 13,  // 包
-    BLACK_SOLDIER = 14  // 卒
-};
+    RED_GENERAL = 1,    RED_ADVISOR = 2,
+    RED_ELEPHANT = 3,   RED_CHARIOT = 4,
+    RED_HORSE = 5,      RED_CANNON = 6,
+    RED_SOLDIER = 7,
+    BLACK_GENERAL = 8,  BLACK_ADVISOR = 9,
+    BLACK_ELEPHANT = 10, BLACK_CHARIOT = 11,
+    BLACK_HORSE = 12,    BLACK_CANNON = 13,
+    BLACK_SOLDIER = 14
+} Piece;
 
-// 定義移動記錄結構
 typedef struct {
     uint8_t x, y, new_x, new_y;
 } sMoveRecord;
 
-// 定義象棋記錄結構
 typedef struct {
     uint8_t board[BOARD_ROWS][BOARD_COLS];
     uint8_t red_captured[16];
@@ -41,13 +35,14 @@ typedef struct {
     sMoveRecord* moves;
     bool is_red_turn;
     bool game_over;
+    char last_error[128];
 } sXiangqiRecord;
 
-// 函數原型
 sXiangqiRecord* initXiangqiRecord(void);
 void freeXiangqiRecord(sXiangqiRecord* record);
 int32_t moveXiangqiRecord(sXiangqiRecord* record, uint8_t x, uint8_t y, uint8_t new_x, uint8_t new_y);
 int32_t printXiangqiRecord(sXiangqiRecord* record);
 int32_t printXiangqiPlay(sXiangqiRecord* record);
+bool is_checkmate(sXiangqiRecord* record, bool is_red);
 
-#endif // XIANGQI_H
+#endif
