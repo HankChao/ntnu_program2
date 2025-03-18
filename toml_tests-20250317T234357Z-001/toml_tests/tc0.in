@@ -1,0 +1,7 @@
+TOML
+5
+owner = { name = "Jane", email = "jane@example.com" }
+database = { host = "127.0.0.1", port = 3306, enabled = true }
+
+[server]
+location = { city = "New York", country = "USA" }

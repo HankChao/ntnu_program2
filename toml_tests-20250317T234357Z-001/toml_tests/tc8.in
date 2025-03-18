@@ -1,0 +1,95 @@
+TOML
+93
+title = "Large TOML Test Case"
+version = 3.14
+release_date = 2025-03-12T10:15:30Z
+is_active = true
+
+[app]
+name = "SuperApp"
+platforms = "Windows, macOS, Linux"
+license = "MIT"
+
+[app.settings]
+dark_mode = true
+language = "en-US"
+max_connections = 100
+
+[app.settings.security]
+encryption = "AES-256"
+two_factor_auth = true
+
+[database]
+host = "192.168.1.100"
+port = 5432
+username = "admin"
+password = "securepassword"
+timeout = 30.5
+
+[database.replica]
+host = "192.168.1.101"
+port = 5432
+
+[server]
+hostname = "myserver.com"
+ssl_enabled = true
+max_clients = 5000
+
+[server.logging]
+level = "debug"
+file = "/var/log/server.log"
+rotation_size = 10_000_000  # 10MB
+
+[server.cors]
+enabled = true
+allowed_origins = "https://example.com, https://myapp.com"
+methods = "GET, POST, PUT"
+
+[metadata]
+author = "John Doe"
+email = "john.doe@example.com"
+company = "TechCorp"
+last_updated = 2025-02-28
+
+[user]
+id = 12345
+name = "Alice"
+email = "alice@example.com"
+active = true
+
+[user.preferences]
+theme = "dark"
+notifications = false
+font_size = 14
+
+[network]
+ip = "192.168.0.1"
+subnet = "255.255.255.0"
+gateway = "192.168.0.254"
+
+[network.dns]
+primary = "8.8.8.8"
+secondary = "8.8.4.4"
+
+[storage]
+path = "/mnt/data"
+size_limit = 500_000_000  # 500MB
+
+[storage.backup]
+enabled = true
+schedule = "daily"
+location = "/mnt/backup"
+
+[notifications]
+email_enabled = true
+sms_enabled = false
+
+[notifications.email]
+smtp_server = "smtp.mail.com"
+port = 465
+use_ssl = true
+username = "no-reply@mail.com"
+
+[notifications.sms]
+provider = "Twilio"
+api_key = "SECRET_KEY"

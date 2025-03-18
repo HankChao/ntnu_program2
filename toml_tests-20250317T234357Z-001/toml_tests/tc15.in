@@ -1,0 +1,22 @@
+TOML
+20
+[company]
+name = "TechCorp"
+location = "San Francisco"
+founded = 1995
+
+[[company.departments]]
+name = "Engineering"
+employees = 120
+
+[[company.departments]]
+name = "Marketing"
+employees = 45
+
+[[company.departments]]
+name = "Sales"
+employees = 60
+
+[company.ceo]
+name = "Alice Johnson"
+age = 45

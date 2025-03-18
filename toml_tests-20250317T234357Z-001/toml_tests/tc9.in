@@ -1,0 +1,29 @@
+TOML
+27
+[owner]
+name = "Tom"
+dob = 1987-09-14T12:34:56Z
+
+[[owner.contacts]]
+type = "email"
+value = "tom@example.com"
+
+[[owner.contacts]]
+type = "phone"
+value = "+123456789"
+
+[[owner.contacts]]
+type = "address"
+value = "123 Main St"
+
+[settings]
+theme = "dark"
+timezone = "UTC"
+
+[[settings.features]]
+name = "search"
+enabled = true
+
+[[settings.features]]
+name = "notifications"
+enabled = false

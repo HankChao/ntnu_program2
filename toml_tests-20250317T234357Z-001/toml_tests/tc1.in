@@ -1,0 +1,13 @@
+TOML
+11
+name = "Alice"
+age = 25
+is_student = false
+
+[owner]
+name = "Alice"
+dob = 1990-07-20T00:00:00Z
+
+[database]
+enabled = true
+ports = [8000, 8001, 8002]

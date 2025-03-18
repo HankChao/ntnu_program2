@@ -1,0 +1,14 @@
+TOML
+12
+[[events]]
+name = "Birthday Party"
+date = 2025-07-12T18:30:00Z
+location = "New York"
+
+[[events]]
+name = "Conference"
+date = 2025-09-14T09:00:00Z
+location = "San Francisco"
+
+[preferences]
+likes = ["reading", "traveling", "music"]

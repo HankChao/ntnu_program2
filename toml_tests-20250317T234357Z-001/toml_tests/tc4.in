@@ -1,0 +1,20 @@
+TOML
+18
+[company]
+name = "TechCorp"
+
+[company.ceo]
+name = "Alice"
+age = 45
+
+[company.ceo.contact]
+email = "alice@techcorp.com"
+phone = "123-456-7890"
+
+[company.departments.hr]
+employees = 25
+manager = "Bob"
+
+[company.departments.engineering]
+employees = 50
+manager = "Charlie"

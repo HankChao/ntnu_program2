@@ -1,0 +1,7 @@
+TOML
+5
+description = """
+This is a multi-line string.
+It can span multiple lines,
+including special characters such as \n and \t.
+"""

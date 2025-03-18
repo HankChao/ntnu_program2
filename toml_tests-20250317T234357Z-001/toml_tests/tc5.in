@@ -1,0 +1,12 @@
+TOML
+10
+title = "TOML to JSON Converter"
+version = 1.2
+release_date = 2025-03-05T12:00:00Z
+authors = ["Jason", "Tom"]
+
+[config]
+enabled = true
+multi_line_string = """This is
+a multi -line
+string."""

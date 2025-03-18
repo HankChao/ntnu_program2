@@ -1,0 +1,22 @@
+TOML
+
+[[users]]
+name = "John"
+age = 25
+email = "john@example.com"
+roles = ["admin", "user"]
+
+[[users]]
+name = "Jane"
+age = 28
+email = "jane@example.com"
+roles = ["user"]
+
+[app]
+name = "SampleApp"
+version = "2.0"
+release_date = 2025-05-10T09:30:00Z
+
+[app.settings]
+theme = "dark"
+debug_mode = true

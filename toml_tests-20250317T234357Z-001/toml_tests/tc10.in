@@ -1,0 +1,24 @@
+TOML
+22
+[database]
+host = "localhost"
+port = 5432
+username = "admin"
+password = "secret"
+
+[[database.databases]]
+name = "users"
+size = 1024
+
+[[database.databases]]
+name = "products"
+size = 2048
+
+[servers]
+[[servers.machines]]
+ip = "192.168.0.1"
+status = "active"
+
+[[servers.machines]]
+ip = "192.168.0.2"
+status = "inactive"

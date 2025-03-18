@@ -1,0 +1,20 @@
+TOML
+18
+[person]
+name = "Alice"
+age = 30
+is_active = true
+
+[[person.addresses]]
+street = "123 Elm St"
+city = "Wonderland"
+zip = "12345"
+
+[[person.addresses]]
+street = "456 Oak St"
+city = "Dreamland"
+zip = "67890"
+
+[person.settings]
+theme = "light"
+notifications = true

@@ -1,0 +1,23 @@
+TOML
+21
+[app]
+name = "AwesomeApp"
+version = "1.0.0"
+release_date = 2025-03-17T14:00:00Z
+
+[[app.dependencies]]
+name = "libraryA"
+version = "2.3.4"
+
+[[app.dependencies]]
+name = "libraryB"
+version = "1.4.0"
+
+[settings]
+mode = "production"
+debug = false
+max_connections = 100
+
+[[settings.features]]
+enabled = true
+name = "logging"

@@ -1,0 +1,11 @@
+TOML
+9
+# This is a comment
+server = "production"
+ports = [8080, 443]
+config = { mode = "auto", retry = 3 }
+
+
+[logging]
+level = "debug"
+timestamp = 2025-03-05T15:30:00Z
