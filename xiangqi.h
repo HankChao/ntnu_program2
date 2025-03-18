@@ -1,6 +1,5 @@
 #ifndef XIANGQI_H
 #define XIANGQI_H
-
 #include <stdint.h>
 #include <stdbool.h>
 
