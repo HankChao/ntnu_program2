@@ -618,6 +618,42 @@ int32_t moveXiangqiRecord(sXiangqiRecord* r, uint8_t x, uint8_t y, uint8_t nx, u
         return -1;
     }
 
+    // 檢查移動後王是否會被攻擊（自殺）
+    // 臨時移動並檢查
+    uint8_t temp = r->board[nx][ny];
+    r->board[nx][ny] = piece;
+    r->board[x][y] = EMPTY;
+    
+    // 尋找我方將的位置
+    uint8_t my_general = is_red ? RED_GENERAL : BLACK_GENERAL;
+    int general_x = -1, general_y = -1;
+    
+    for (int i = 0; i < BOARD_ROWS && general_x == -1; i++) {
+        for (int j = 0; j < BOARD_COLS; j++) {
+            if (r->board[i][j] == my_general) {
+                general_x = i;
+                general_y = j;
+                break;
+            }
+        }
+    }
+    
+    // 檢查我方將/帥是否被將軍
+    bool is_check = false;
+    if (general_x != -1) {
+        is_check = check_under_attack(r, general_x, general_y, !is_red);
+    }
+    
+    // 恢復棋盤
+    r->board[x][y] = piece;
+    r->board[nx][ny] = temp;
+    
+    // 如果移動會導致我方被將軍，則不允許
+    if (is_check) {
+        snprintf(r->last_error, sizeof(r->last_error), "%s自殺", is_red ? "紅帥" : "黑將");
+        return -1;
+    }
+
     // 添加移動記錄
     sMoveRecord* new_moves = realloc(r->moves, (r->move_count + 1) * sizeof(sMoveRecord));
     if (!new_moves) {
@@ -692,6 +728,7 @@ int32_t printXiangqiRecord(sXiangqiRecord* r) {
     printf(" ┌──────────────────┐\n");
 
     for (int x = BOARD_ROWS - 1; x >= 0; x--) {
+        if(x==4)    printf("  ──────────────────\n");
         printf("%d│", x);
         for (int y = 0; y < BOARD_COLS; y++) {
             uint8_t p = r->board[x][y];

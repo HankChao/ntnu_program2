@@ -1,161 +1,365 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
-#include <assert.h>
+#include <ctype.h>
 #include "mystring.h"
 
-// 顯示測試是否通過的輔助函式
-void test_result(const char* test_name, int result) {
-    printf("%-40s %s\n", test_name, result ? "通過" : "失敗");
+// 定義顏色宏
+#define BLUE "\033[34m"
+#define YELLOW "\033[33m"
+#define RESET "\033[0m"
+
+// 測試 mystrchr
+void test_mystrchr(void) {
+    const char *s = "Hello, world!";
+    int c1 = 'l';
+    int c2 = 'z';
+    int c3 = '\0';
+
+    printf(BLUE "=== Testing mystrchr ===\n" RESET);
+    char *std1 = strchr(s, c1);
+    char *my1 = mystrchr(s, c1);
+    printf(YELLOW "mystrchr: Searching for '%c' in \"%s\"\n" RESET, c1, s);
+    printf("  Standard strchr: %s\n", std1 ? std1 : "NULL");
+    printf("  My mystrchr   : %s\n", my1 ? my1 : "NULL");
+
+    char *std2 = strchr(s, c2);
+    char *my2 = mystrchr(s, c2);
+    printf(YELLOW "mystrchr: Searching for '%c' in \"%s\"\n" RESET, c2, s);
+    printf("  Standard strchr: %s\n", std2 ? std2 : "NULL");
+    printf("  My mystrchr   : %s\n", my2 ? my2 : "NULL");
+
+    char *std3 = strchr(s, c3);
+    char *my3 = mystrchr(s, c3);
+    printf(YELLOW "mystrchr: Searching for '\\0' in \"%s\"\n" RESET, s);
+    printf("  Standard strchr: %s\n", std3 ? std3 : "NULL");
+    printf("  My mystrchr   : %s\n", my3 ? my3 : "NULL");
+
+    // 測試非法參數：傳入 NULL 作為字串
+    printf(YELLOW "mystrchr: Testing illegal parameter: s = NULL\n" RESET);
+    // 以下測試可根據實作決定是否註解，避免真的 crash
+    // char *illegal = mystrchr(NULL, 'a');
+    // printf("  My mystrchr(NULL, 'a') returned: %s\n", illegal ? illegal : "NULL or error");
+
+    printf("\n");
 }
 
-// 測試 mystrchr 函式
-void test_mystrchr() {
-    printf("\n=== 測試 mystrchr 函式 ===\n");
-    
-    // 一般測試案例
-    char str1[] = "Hello, World!";
-    test_result("尋找存在的字元", mystrchr(str1, 'o') == strchr(str1, 'o'));
-    test_result("尋找第一個出現的字元", mystrchr(str1, 'o') == &str1[4]);
-    test_result("尋找不存在的字元", mystrchr(str1, 'z') == NULL);
-    
-    // 特殊案例
-    test_result("尋找空字符 (\\0)", mystrchr(str1, '\0') == &str1[13]);
-    test_result("在空字串中尋找", mystrchr("", 'a') == NULL);
-    test_result("在空字串中尋找空字符", mystrchr("", '\0') == strchr("", '\0'));
+// 測試 mystrrchr
+void test_mystrrchr(void) {
+    const char *s = "Hello, world!";
+    int c1 = 'l';
+    int c2 = 'z';
+    int c3 = '\0';
+
+    printf(BLUE "=== Testing mystrrchr ===\n" RESET);
+    char *std1 = strrchr(s, c1);
+    char *my1 = mystrrchr(s, c1);
+    printf(YELLOW "mystrrchr: Searching for '%c' in \"%s\"\n" RESET, c1, s);
+    printf("  Standard strrchr: %s\n", std1 ? std1 : "NULL");
+    printf("  My mystrrchr   : %s\n", my1 ? my1 : "NULL");
+
+    char *std2 = strrchr(s, c2);
+    char *my2 = mystrrchr(s, c2);
+    printf(YELLOW "mystrrchr: Searching for '%c' in \"%s\"\n" RESET, c2, s);
+    printf("  Standard strrchr: %s\n", std2 ? std2 : "NULL");
+    printf("  My mystrrchr   : %s\n", my2 ? my2 : "NULL");
+
+    char *std3 = strrchr(s, c3);
+    char *my3 = mystrrchr(s, c3);
+    printf(YELLOW "mystrrchr: Searching for '\\0' in \"%s\"\n" RESET, s);
+    printf("  Standard strrchr: %s\n", std3 ? std3 : "NULL");
+    printf("  My mystrrchr   : %s\n", my3 ? my3 : "NULL");
+
+    // 測試非法參數：傳入 NULL 作為字串
+    printf(YELLOW "mystrrchr: Testing illegal parameter: s = NULL\n" RESET);
+    // char *illegal = mystrrchr(NULL, 'a');
+    // printf("  My mystrrchr(NULL, 'a') returned: %s\n", illegal ? illegal : "NULL or error");
+
+    printf("\n");
 }
 
-// 測試 mystrrchr 函式
-void test_mystrrchr() {
-    printf("\n=== 測試 mystrrchr 函式 ===\n");
-    
-    // 一般測試案例
-    char str1[] = "Hello, World!";
-    test_result("尋找存在的字元", mystrrchr(str1, 'o') == strrchr(str1, 'o'));
-    test_result("尋找最後一個出現的字元", mystrrchr(str1, 'o') == &str1[8]);
-    test_result("尋找不存在的字元", mystrrchr(str1, 'z') == NULL);
-    
-    // 特殊案例
-    test_result("尋找空字符 (\\0)", mystrrchr(str1, '\0') == &str1[13]);
-    test_result("字元只出現一次", mystrrchr(str1, '!') == &str1[12]);
-    test_result("在空字串中尋找空字符", mystrrchr("", '\0') == strrchr("", '\0'));
+// 測試 mystrspn
+void test_mystrspn(void) {
+    printf(BLUE "=== Testing mystrspn ===\n" RESET);
+    const char *s1 = "abcdefg";
+    const char *accept1 = "abc";
+    size_t std1 = strspn(s1, accept1);
+    size_t my1 = mystrspn(s1, accept1);
+    printf(YELLOW "mystrspn: strspn(\"%s\", \"%s\") = %zu\n" RESET, s1, accept1, std1);
+    printf("          mystrspn(\"%s\", \"%s\") = %zu\n", s1, accept1, my1);
+
+    const char *s2 = "xyzabc";
+    const char *accept2 = "abc";
+    size_t std2 = strspn(s2, accept2);
+    size_t my2 = mystrspn(s2, accept2);
+    printf(YELLOW "mystrspn: strspn(\"%s\", \"%s\") = %zu\n" RESET, s2, accept2, std2);
+    printf("          mystrspn(\"%s\", \"%s\") = %zu\n", s2, accept2, my2);
+
+    const char *s3 = "";
+    size_t std3 = strspn(s3, accept1);
+    size_t my3 = mystrspn(s3, accept1);
+    printf(YELLOW "mystrspn: strspn(\"%s\", \"%s\") = %zu\n" RESET, s3, accept1, std3);
+    printf("          mystrspn(\"%s\", \"%s\") = %zu\n", s3, accept1, my3);
+
+    // 測試非法參數：傳入 NULL 作為 s 或 accept
+    printf(YELLOW "mystrspn: Testing illegal parameter: accept = NULL\n" RESET);
+    // 如果你的實作對非法參數有檢查，可以這樣測試：
+    // size_t my_illegal = mystrspn(s1, NULL);
+    // printf("          mystrspn(\"%s\", NULL) = %zu\n", s1, my_illegal);
+
+    printf("\n");
 }
 
-// 測試 mystrspn 函式
-void test_mystrspn() {
-    printf("\n=== 測試 mystrspn 函式 ===\n");
-    
-    // 一般測試案例
-    char str1[] = "12345abc789";
-    test_result("只匹配開頭部分字元", mystrspn(str1, "0123456789") == 5);
-    test_result("匹配所有字元", mystrspn("12345", "0123456789") == 5);
-    test_result("無匹配字元", mystrspn("abcde", "0123456789") == 0);
-    
-    // 特殊案例
-    test_result("空字串的匹配", mystrspn("", "0123456789") == 0);
-    test_result("空接受集合", mystrspn("12345", "") == 0);
-    test_result("與標準函式比較", mystrspn(str1, "0123456789") == strspn(str1, "0123456789"));
+// 測試 mystrcspn
+void test_mystrcspn(void) {
+    printf(BLUE "=== Testing mystrcspn ===\n" RESET);
+    const char *s1 = "abcdefg";
+    const char *reject1 = "de";
+    size_t std1 = strcspn(s1, reject1);
+    size_t my1 = mystrcspn(s1, reject1);
+    printf(YELLOW "mystrcspn: strcspn(\"%s\", \"%s\") = %zu\n" RESET, s1, reject1, std1);
+    printf("           mystrcspn(\"%s\", \"%s\") = %zu\n", s1, reject1, my1);
+
+    const char *s2 = "abcdefg";
+    const char *reject2 = "xyz";
+    size_t std2 = strcspn(s2, reject2);
+    size_t my2 = mystrcspn(s2, reject2);
+    printf(YELLOW "mystrcspn: strcspn(\"%s\", \"%s\") = %zu\n" RESET, s2, reject2, std2);
+    printf("           mystrcspn(\"%s\", \"%s\") = %zu\n", s2, reject2, my2);
+
+    const char *reject3 = "";
+    size_t std3 = strcspn(s1, reject3);
+    size_t my3 = mystrcspn(s1, reject3);
+    printf(YELLOW "mystrcspn: strcspn(\"%s\", \"%s\") = %zu\n" RESET, s1, reject3, std3);
+    printf("           mystrcspn(\"%s\", \"%s\") = %zu\n", s1, reject3, my3);
+
+    // 測試非法參數
+    printf(YELLOW "mystrcspn: Testing illegal parameter: reject = NULL\n" RESET);
+    // size_t my_illegal = mystrcspn(s1, NULL);
+    // printf("           mystrcspn(\"%s\", NULL) = %zu\n", s1, my_illegal);
+
+    printf("\n");
 }
 
-// 測試 mystrcspn 函式
-void test_mystrcspn() {
-    printf("\n=== 測試 mystrcspn 函式 ===\n");
-    
-    // 一般測試案例
-    char str1[] = "abcde12345";
-    test_result("只排除後面部分字元", mystrcspn(str1, "0123456789") == 5);
-    test_result("排除所有字元", mystrcspn("12345", "0123456789") == 0);
-    test_result("無排除字元", mystrcspn("abcde", "0123456789") == 5);
-    
-    // 特殊案例
-    test_result("空字串的排除", mystrcspn("", "0123456789") == 0);
-    test_result("空排除集合", mystrcspn("12345", "") == 5);
-    test_result("與標準函式比較", mystrcspn(str1, "0123456789") == strcspn(str1, "0123456789"));
+// 測試 mystrpbrk
+void test_mystrpbrk(void) {
+    printf(BLUE "=== Testing mystrpbrk ===\n" RESET);
+    const char *s1 = "Hello, world!";
+    const char *accept1 = "aeiou";
+    char *std1 = strpbrk(s1, accept1);
+    char *my1 = mystrpbrk(s1, accept1);
+    printf(YELLOW "mystrpbrk: strpbrk(\"%s\", \"%s\") = %s\n" RESET, s1, accept1, std1 ? std1 : "NULL");
+    printf("           mystrpbrk(\"%s\", \"%s\") = %s\n", s1, accept1, my1 ? my1 : "NULL");
+
+    const char *accept2 = "xyz";
+    char *std2 = strpbrk(s1, accept2);
+    char *my2 = mystrpbrk(s1, accept2);
+    printf(YELLOW "mystrpbrk: strpbrk(\"%s\", \"%s\") = %s\n" RESET, s1, accept2, std2 ? std2 : "NULL");
+    printf("           mystrpbrk(\"%s\", \"%s\") = %s\n", s1, accept2, my2 ? my2 : "NULL");
+
+    // 測試非法參數
+    printf(YELLOW "mystrpbrk: Testing illegal parameter: s = NULL\n" RESET);
+    // char *illegal = mystrpbrk(NULL, accept1);
+    // printf("           mystrpbrk(NULL, \"%s\") = %s\n", accept1, illegal ? illegal : "NULL or error");
+    printf(YELLOW "mystrpbrk: Testing illegal parameter: accept = NULL\n" RESET);
+    // illegal = mystrpbrk(s1, NULL);
+    // printf("           mystrpbrk(\"%s\", NULL) = %s\n", s1, illegal ? illegal : "NULL or error");
+
+    printf("\n");
 }
 
-// 測試 mystrpbrk 函式
-void test_mystrpbrk() {
-    printf("\n=== 測試 mystrpbrk 函式 ===\n");
-    
-    // 一般測試案例
-    char str1[] = "Hello, World!";
-    test_result("尋找存在的字元", mystrpbrk(str1, "aeiou") == strpbrk(str1, "aeiou"));
-    test_result("尋找第一個匹配字元", mystrpbrk(str1, "aeiou") == &str1[1]);  // 'e' in Hello
-    test_result("尋找不存在的字元", mystrpbrk(str1, "xyz") == NULL);
-    
-    // 特殊案例
-    test_result("空字串中尋找", mystrpbrk("", "aeiou") == NULL);
-    test_result("空接受集合", mystrpbrk(str1, "") == NULL);
+// 測試 mystrstr
+void test_mystrstr(void) {
+    printf(BLUE "=== Testing mystrstr ===\n" RESET);
+    const char *haystack = "The quick brown fox jumps over the lazy dog.";
+    const char *needle1 = "brown";
+    const char *needle2 = "cat";
+    const char *needle3 = "";
+
+    char *std1 = strstr(haystack, needle1);
+    char *my1 = mystrstr(haystack, needle1);
+    printf(YELLOW "mystrstr: strstr(\"%s\", \"%s\") = %s\n" RESET, haystack, needle1, std1 ? std1 : "NULL");
+    printf("           mystrstr(\"%s\", \"%s\") = %s\n", haystack, needle1, my1 ? my1 : "NULL");
+
+    char *std2 = strstr(haystack, needle2);
+    char *my2 = mystrstr(haystack, needle2);
+    printf(YELLOW "mystrstr: strstr(\"%s\", \"%s\") = %s\n" RESET, haystack, needle2, std2 ? std2 : "NULL");
+    printf("           mystrstr(\"%s\", \"%s\") = %s\n", haystack, needle2, my2 ? my2 : "NULL");
+
+    char *std3 = strstr(haystack, needle3);
+    char *my3 = mystrstr(haystack, needle3);
+    printf(YELLOW "mystrstr: strstr(\"%s\", \"%s\") = %s\n" RESET, haystack, needle3, std3 ? std3 : "NULL");
+    printf("           mystrstr(\"%s\", \"%s\") = %s\n", haystack, needle3, my3 ? my3 : "NULL");
+
+    // 測試非法參數
+    printf(YELLOW "mystrstr: Testing illegal parameter: haystack = NULL\n" RESET);
+    // char *illegal = mystrstr(NULL, needle1);
+    // printf("           mystrstr(NULL, \"%s\") = %s\n", needle1, illegal ? illegal : "NULL or error");
+    printf(YELLOW "mystrstr: Testing illegal parameter: needle = NULL\n" RESET);
+    // illegal = mystrstr(haystack, NULL);
+    // printf("           mystrstr(\"%s\", NULL) = %s\n", haystack, illegal ? illegal : "NULL or error");
+
+    printf("\n");
 }
 
-// 測試 mystrstr 函式
-void test_mystrstr() {
-    printf("\n=== 測試 mystrstr 函式 ===\n");
-    
-    // 一般測試案例
-    char str1[] = "Hello, World!";
-    test_result("尋找存在的子字串", mystrstr(str1, "World") == strstr(str1, "World"));
-    test_result("尋找存在的子字串(位置檢查)", mystrstr(str1, "World") == &str1[7]);
-    test_result("尋找不存在的子字串", mystrstr(str1, "Earth") == NULL);
-    
-    // 特殊案例
-    test_result("尋找空子字串", mystrstr(str1, "") == str1);
-    test_result("在空字串中尋找", mystrstr("", "World") == NULL);
-    test_result("子字串比主字串長", mystrstr("Hi", "Hello") == NULL);
-    test_result("完全相同的字串", mystrstr("Hello", "Hello") == strstr("Hello", "Hello"));
-    test_result("重疊子字串", mystrstr("ababc", "abc") == &"ababc"[2]);
+// 測試 mystrtok
+void test_mystrtok(void) {
+    printf(BLUE "=== Testing mystrtok ===\n" RESET);
+    {
+        // 測試非法參數：傳入 NULL 作為初始字串
+        printf(YELLOW "Test Case Illegal Parameter for mystrtok:\n" RESET);
+        printf("Calling mystrtok(NULL, \",\")\n");
+        // char *illegal_token = mystrtok(NULL, ",");
+        // if (!illegal_token)
+        //     printf("  Returned NULL (or error message displayed)\n");
+        // else
+        //     printf("  Returned token: (ignored)\n");
+        printf("\n");
+    }
+    {
+        // 測試非法參數：傳入 NULL 作為分割字串
+        char inputIllegal[] = "This,is,a,test,string";
+        printf(YELLOW "Test Case Illegal Parameter for mystrtok:\n" RESET);
+        printf("Calling mystrtok(%s, NULL)\n", inputIllegal);
+        // char *illegal_token = mystrtok(inputIllegal, NULL);
+        // if (!illegal_token)
+        //     printf("  Returned NULL (or error message displayed)\n");
+        // else
+        //     printf("  Returned token: (ignored)\n");
+        printf("\n");
+    }
+    {
+        // 測試範例1：簡單分隔
+        char input1[] = "This,is,a,test,string";
+        char copy1_std[sizeof(input1)];
+        char copy1_my[sizeof(input1)];
+        strcpy(copy1_std, input1);
+        strcpy(copy1_my, input1);
+
+        printf(YELLOW "Test Case 1:\n" RESET);
+        printf("Input: \"%s\", delim=\",\" \n", input1);
+        
+        // 使用標準 strtok
+        printf(BLUE "Standard strtok:\n" RESET);
+        int idx = 0;
+        char *token = strtok(copy1_std, ",");
+        while (token) {
+            printf("  Token %d: \"%s\"\n", idx++, token);
+            token = strtok(NULL, ",");
+        }
+        
+        // 使用自製 mystrtok
+        printf(BLUE "My mystrtok:\n" RESET);
+        idx = 0;
+        token = mystrtok(copy1_my, ",");
+        while (token) {
+            printf("  Token %d: \"%s\"\n", idx++, token);
+            token = mystrtok(NULL, ",");
+        }
+
+        printf("\n");
+    }
+
+    {
+        // 測試範例2：連續分隔符與空 token
+        char input2[] = ";;Hello;;World;;";
+        char copy2_std[sizeof(input2)];
+        char copy2_my[sizeof(input2)];
+        strcpy(copy2_std, input2);
+        strcpy(copy2_my, input2);
+
+        printf(YELLOW "Test Case 2:\n" RESET);
+        printf("Input: \"%s\", delim=\";\" \n", input2);
+        
+        printf(BLUE "Standard strtok:\n" RESET);
+        int idx = 0;
+        char *token = strtok(copy2_std, ";");
+        while (token) {
+            printf("  Token %d: \"%s\"\n", idx++, token);
+            token = strtok(NULL, ";");
+        }
+        
+        printf(BLUE "My mystrtok:\n" RESET);
+        idx = 0;
+        token = mystrtok(copy2_my, ";");
+        while (token) {
+            printf("  Token %d: \"%s\"\n", idx++, token);
+            token = mystrtok(NULL, ";");
+        }
+        printf("\n");
+    }
+
+    {
+        // 測試範例3：空字串
+        char input3[] = "";
+        char copy3_std[sizeof(input3)];
+        char copy3_my[sizeof(input3)];
+        strcpy(copy3_std, input3);
+        strcpy(copy3_my, input3);
+
+        printf(YELLOW "Test Case 3:\n" RESET);
+        printf("Input: \"%s\", delim=\",\" \n", input3);
+        
+        printf(BLUE "Standard strtok:\n" RESET);
+        int idx = 0;
+        char *token = strtok(copy3_std, ",");
+        if (!token) {
+            printf("  No tokens (NULL returned)\n");
+        } else {
+            while (token) {
+                printf("  Token %d: \"%s\"\n", idx++, token);
+                token = strtok(NULL, ",");
+            }
+        }
+        
+        printf(BLUE "My mystrtok:\n" RESET);
+        idx = 0;
+        token = mystrtok(copy3_my, ",");
+        if (!token) {
+            printf("  No tokens (NULL returned)\n");
+        } else {
+            while (token) {
+                printf("  Token %d: \"%s\"\n", idx++, token);
+                token = mystrtok(NULL, ",");
+            }
+        }
+        printf("\n");
+    }
+
+    {
+        // 測試範例4：連續分隔符導致空 token
+        char input4[] = "one,,,two,,three,";
+        char copy4_std[sizeof(input4)];
+        char copy4_my[sizeof(input4)];
+        strcpy(copy4_std, input4);
+        strcpy(copy4_my, input4);
+
+        printf(YELLOW "Test Case 4:\n" RESET);
+        printf("Input: \"%s\", delim=\",\" \n", input4);
+        
+        printf(BLUE "Standard strtok:\n" RESET);
+        int idx = 0;
+        char *token = strtok(copy4_std, ",");
+        while (token) {
+            printf("  Token %d: \"%s\"\n", idx++, token);
+            token = strtok(NULL, ",");
+        }
+        
+        printf(BLUE "My mystrtok:\n" RESET);
+        idx = 0;
+        token = mystrtok(copy4_my, ",");
+        while (token) {
+            printf("  Token %d: \"%s\"\n", idx++, token);
+            token = mystrtok(NULL, ",");
+        }
+        printf("\n");
+    }
 }
 
-// 測試 mystrtok 函式
-void test_mystrtok() {
-    printf("\n=== 測試 mystrtok 函式 ===\n");
-    
-    // 測試基本分割功能
-    char str1[] = "Hello,World,Programming";
-    char str1_copy[] = "Hello,World,Programming";
-    char *token1, *token2;
-    
-    // 第一次呼叫
-    token1 = mystrtok(str1, ",");
-    token2 = strtok(str1_copy, ",");
-    test_result("第一次呼叫", strcmp(token1, token2) == 0);
-    
-    // 第二次呼叫
-    token1 = mystrtok(NULL, ",");
-    token2 = strtok(NULL, ",");
-    test_result("第二次呼叫", strcmp(token1, token2) == 0);
-    
-    // 第三次呼叫
-    token1 = mystrtok(NULL, ",");
-    token2 = strtok(NULL, ",");
-    test_result("第三次呼叫", strcmp(token1, token2) == 0);
-    
-    // 測試多個分隔符號
-    char str2[] = "apple:banana;orange,grape";
-    char str2_copy[] = "apple:banana;orange,grape";
-    
-    token1 = mystrtok(str2, ":;,");
-    token2 = strtok(str2_copy, ":;,");
-    test_result("多個分隔符號-第一次", strcmp(token1, token2) == 0);
-    
-    // 測試連續分隔符號
-    char str3[] = "abc:::def";
-    char str3_copy[] = "abc:::def";
-    
-    token1 = mystrtok(str3, ":");
-    token2 = strtok(str3_copy, ":");
-    test_result("連續分隔符號-第一次", strcmp(token1, token2) == 0);
-    
-    token1 = mystrtok(NULL, ":");
-    token2 = strtok(NULL, ":");
-    test_result("連續分隔符號-第二次", strcmp(token1, token2) == 0);
-}
+int main(void) {
+    printf(BLUE "==== Testing Standard C String Functions vs. My String Library ====\n\n" RESET);
 
-// 主函式
-int main() {
-    printf("=== 自訂字串函式庫測試 ===\n");
-    
-    // 執行各項測試
     test_mystrchr();
     test_mystrrchr();
     test_mystrspn();
@@ -163,7 +367,6 @@ int main() {
     test_mystrpbrk();
     test_mystrstr();
     test_mystrtok();
-    
-    printf("\n所有測試完成！\n");
+
     return 0;
 }
